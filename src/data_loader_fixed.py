@@ -24,7 +24,6 @@ def _check_columns(df, required, name):
 def validate_and_prepare(users_file, products_file, ratings_file, behavior_file):
 
     users = _clean_columns(pd.read_excel(users_file))    
-    # ✅ الحل هون قبل التحقق
     users = users.rename(columns={
         "user_id": "id_user",
         "country": "location"
