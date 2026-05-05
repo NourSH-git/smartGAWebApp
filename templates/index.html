@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartGA – توصيات المنتجات</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+   body {
+    margin: 0;
+    font-family: 'Cairo', sans-serif;
+    background: linear-gradient(180deg, #f6f7fb, #eef1f6);
+}
+
+/* NAVBAR */
+.navbar {
+    background: #111827;
+    color: white;
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.navbar h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 800;
+    color: #fbbf24;
+}
+
+/* SEARCH */
+.search-box {
+    flex: 1;
+    display: flex;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px 0 0 8px;
+    outline: none;
+}
+
+.search-box button {
+    background: #fbbf24;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 10px;
+}
+
+/* INPUT BOX */
+.input-box {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.input-box input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    outline: none;
+}
+
+/* BUTTON */
+.btn {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    padding: 12px 18px;
+    border-radius: 10px;
+    color: white;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+}
+
+/* GRID */
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 22px;
+}
+
+/* CARD */
+.card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+}
+
+/* IMAGE */
+.card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+/* CATEGORY */
+.category-tag {
+    background: #111827;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin: 10px;
+    display: inline-block;
+}
+
+/* TEXT */
+.card h3 {
+    margin: 10px;
+    font-size: 18px;
+}
+
+.price {
+    color: #16a34a;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 10px;
+}
+
+.card p {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 10px;
+}
+
+/* BUTTON */
+.add-btn {
+    background: #111827;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 0 0 14px 14px;
+    width: 100%;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.add-btn:hover {
+    background: #374151;
+}
+
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <h1>Smart GA Recommender</h1>
+
+       
+    </div>
+
+    <!-- MAIN -->
+    <div class="container">
+
+        <div class="input-box">
+            <input type="number" id="userId" placeholder="قم بإدخال رقم المستخدم">
+            <button class="btn" onclick="getRecommendations()">عرض التوصيات</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+    const categoryImages = {
+  "Electronics": "https://images.pexels.com/photos/356056/pexels-photo-356056.jpeg",
+  "Clothes": "https://images.pexels.com/photos/994517/pexels-photo-994517.jpeg",
+  "Perfumes": "https://images.unsplash.com/photo-1594035910387-fea47794261f",
+  "Toys": "https://images.unsplash.com/photo-1587654780291-39c9404d746b",
+  "Sports": "https://images.pexels.com/photos/274422/pexels-photo-274422.jpeg",
+  "Books": "https://images.pexels.com/photos/159711/books-bookstore-book-reading-159711.jpeg",
+"Home": "https://images.pexels.com/photos/5825573/pexels-photo-5825573.jpeg"
+};
+
+
+
+
+
+
+
+
+        async function getRecommendations() {
+            const userId = document.getElementById("userId").value;
+            const resultsDiv = document.getElementById("results");
+
+            if (!userId) {
+                alert("يرجى إدخال رقم المستخدم");
+                return;
+            }
+
+            resultsDiv.innerHTML = "<p>جاري جلب التوصيات...</p>";
+
+            try {
+                const response = await fetch("/api/recommend", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: Number(userId) })
+                });
+
+                const data = await response.json();
+                resultsDiv.innerHTML = "";
+
+                if (!data.recommendations || data.recommendations.length === 0) {
+                    resultsDiv.innerHTML = "<p>لا توجد توصيات لهذا المستخدم.</p>";
+                    return;
+                }
+
+                resultsDiv.innerHTML = `<div class='results-grid'></div>`;
+                const grid = document.querySelector(".results-grid");
+
+                data.recommendations.forEach(item => {
+                    const img = categoryImages[item.category] || "https://picsum.photos/300/200";
+
+                    grid.innerHTML += `
+                        <div class="card">
+                            <img src="${img}" alt="${item.category}">
+                            <span class="category-tag">${item.category}</span>
+                            <h3>منتج ${item.product_id}</h3>
+                            <div class="price">$${item.price}</div>
+                            <p>${item.reason}</p>
+                           <button class="add-btn" onclick='addToCart(${JSON.stringify(item)})'>إضافة إلى السلة</button>
+                        </div>
+                    `;
+                });
+
+            } catch (error) {
+                resultsDiv.innerHTML = "<p>حدث خطأ أثناء جلب التوصيات.</p>";
+                console.error(error);
+            }
+        }
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+function addToCart(product) {
+    cart.push(product);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    showToast("تمت إضافة المنتج إلى السلة");
+}
+function showToast(message) {
+    const toast = document.createElement("div");
+    toast.textContent = message;
+    toast.style.position = "fixed";
+    toast.style.bottom = "20px";
+    toast.style.right = "20px";
+    toast.style.background = "#111827";
+    toast.style.color = "white";
+    toast.style.padding = "12px 18px";
+    toast.style.borderRadius = "8px";
+    toast.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
+    toast.style.zIndex = "9999";
+    toast.style.opacity = "0";
+    toast.style.transition = "0.3s";
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.style.opacity = "1", 50);
+    setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 300);
+    }, 2000);
+}
+
+    </script>
+
+</body>
+</html>
