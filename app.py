@@ -6,7 +6,7 @@ from src.recommender import GARecommender
 
 app = Flask(__name__)
 
-# 🔥 تحميل البيانات مباشرة
+# تحميل البيانات مباشرة
 users, products, ratings, behavior = validate_and_prepare(
     "data/sample/users.xlsx",
     "data/sample/products.xlsx",
